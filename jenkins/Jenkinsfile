@@ -21,34 +21,31 @@ pipeline {
                 }
             }
         }
-        // stage('Docker Build') {
-        //     steps {
-        //         script {
-        //             docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
-        //         }
-        //     }
-        // }
-        // stage('Publish to DockerHub') {
-        //     steps {
-        //          script {
-        //             docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
-        //                 docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push()
-        //                 // docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push('latest')+++
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Docker Build') {
+            steps {
+                script {
+                    docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
+                }
+            }
+        }
+        stage('Publish to DockerHub') {
+            steps {
+                 script {
+                    docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
+                        docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push()
+                        docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push('latest')+++
+                    }
+                }
+            }
+        }
         stage('Deploy to EKS') {
             steps {
                 script {
                     sh 'aws eks update-kubeconfig --name=Terraform-Cluster --region=us-east-1'
-                    sh '''
-                    sed -i "s#__IMAGE_TAG__#${env.BUILD_ID}#g' k8s_manifest/deployment.yaml
-                    '''
-                    // sh 'kubectl apply -f k8s_manifest/namespace.yaml'
-                    // sh 'kubectl apply -f k8s_manifest/deployment.yaml'
-                    // sh 'kubectl apply -f k8s_manifest/service.yaml'
-                    sh 'kubectl delete -f k8s_manifest/namespace.yaml'
+                    sh 'kubectl apply -f k8s_manifest/namespace.yaml'
+                    sh 'kubectl apply -f k8s_manifest/deployment.yaml'
+                    sh 'kubectl apply -f k8s_manifest/service.yaml'
+                    // sh 'kubectl delete -f k8s_manifest/namespace.yaml'
                 }
             }
         }
