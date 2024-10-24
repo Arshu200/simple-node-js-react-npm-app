@@ -17,7 +17,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'GitPAT', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh 'git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Arshu200/EKS-Using-Terraform.git'
+                    sh 'git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Arshu200/simple-node-js-react-npm-app.git'
                 }
             }
         }
