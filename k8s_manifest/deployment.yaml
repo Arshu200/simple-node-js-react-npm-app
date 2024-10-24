@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: React_With_Node_container
-        image: arshad200/React_With_Node:__IMAGE_TAG__
+        image: arshad200/react_with_node:__IMAGE_TAG__
         ports:
         - containerPort: 3000
         resources:
