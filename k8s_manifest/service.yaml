@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: React_With_Node
+  namespace: dev
+spec:
+  selector:
+    app: React_With_Node
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 3000

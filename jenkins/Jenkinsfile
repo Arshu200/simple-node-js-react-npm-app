@@ -1,30 +1,68 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:lts-buster-slim'
-            args '-p 3000:3000'
-        }
-    }
+    // --> install awscli, docker,kubectl
+    agent any  
+    // agent {
+    //     docker {
+    //         image 'node:lts-buster-slim'
+    //         args '-p 4000:3000'
+    //     }
+    // }
     environment {
-        CI = 'true'
+        DOCKER_REGISTRY = 'arshad200'
+        DOCKER_IMAGE = "${DOCKER_REGISTRY}/React_With_Node"
+        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
+         
     }
     stages {
-        stage('Build') {
+        stage('Checkout Code') {
             steps {
-                sh 'npm install'
+                withCredentials([usernamePassword(credentialsId: 'GitPAT', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh 'git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Arshu200/EKS-Using-Terraform.git'
+                }
             }
         }
-        stage('Test') {
+        stage('Docker Build') {
             steps {
-                sh './jenkins/scripts/test.sh'
+                script {
+                    
+                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                }
             }
         }
-        stage('Deliver') {
+        stage('Publish to DockerHub') {
             steps {
-                sh './jenkins/scripts/deliver.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './jenkins/scripts/kill.sh'
+                 script {
+                    docker.withRegistry('', DOCKER_CREDENTIALS_ID) {
+                        docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push()
+                        // docker.image("${DOCKER_IMAGE}:${env.BUILD_ID}").push('latest')+++
+                    }
+                }
             }
+        }
+        stage('Deploy to EKS') {
+            steps {
+                script {
+                    sh 'aws eks update-kubeconfig --name=Terraform-Cluster --region=us-east-1'
+                    sh '''
+                    sed -i 's#__IMAGE_TAG__#${env.BUILD_ID}#g' k8s_manifest/deployment.yaml
+                    '''
+                    sh 'kubectl apply -f k8s_manifest/namespace.yaml'
+                    sh 'kubectl apply -f k8s_manifest/deployment.yaml'
+                    sh 'kubectl apply -f k8s_manifest/service.yaml'
+                }
+            }
+        }
+        stage('Send Notification') {
+            steps {
+                mail to: 'arshad22shaik@gmail.com',
+                    subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult} React App was Succesfull!",
+                    body: "The sample-node-js-React-npm-app was successfull \n\nBuild ${env.BUILD_NUMBER} is complete. \n\nStatus: ${currentBuild.currentResult}"
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs() 
         }
     }
 }

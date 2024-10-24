@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: React_With_Node_deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: React_With_Node
+  template:
+    metadata:
+      labels:
+        app: React_With_Node
+    spec:
+      containers:
+      - name: React_With_Node_container
+        image: arshad200/React_With_Node:__IMAGE_TAG__
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "10m"
