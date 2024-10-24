@@ -45,9 +45,10 @@ pipeline {
                     sh '''
                     sed -i 's#__IMAGE_TAG__#${env.BUILD_ID}#g' k8s_manifest/deployment.yaml
                     '''
-                    sh 'kubectl apply -f k8s_manifest/namespace.yaml'
-                    sh 'kubectl apply -f k8s_manifest/deployment.yaml'
-                    sh 'kubectl apply -f k8s_manifest/service.yaml'
+                    // sh 'kubectl apply -f k8s_manifest/namespace.yaml'
+                    // sh 'kubectl apply -f k8s_manifest/deployment.yaml'
+                    // sh 'kubectl apply -f k8s_manifest/service.yaml'
+                    sh 'kubectl delete -f k8s_manifest/namespace.yaml'
                 }
             }
         }
