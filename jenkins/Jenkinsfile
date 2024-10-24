@@ -45,7 +45,7 @@ pipeline {
                     sh 'kubectl apply -f k8s_manifest/namespace.yaml'
                     sh 'kubectl apply -f k8s_manifest/deployment.yaml'
                     sh 'kubectl apply -f k8s_manifest/service.yaml'
-                    // sh 'kubectl delete -f k8s_manifest/namespace.yaml'
+                    // sh 'kubectl delete/apply -f k8s_manifest/namespace.yaml'
                 }
             }
         }
