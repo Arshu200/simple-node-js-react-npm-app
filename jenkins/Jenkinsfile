@@ -9,7 +9,7 @@ pipeline {
     // }
     environment {
         DOCKER_REGISTRY = 'arshad200'
-        DOCKER_IMAGE = "${DOCKER_REGISTRY}/React_With_Node"
+        DOCKER_IMAGE = "${DOCKER_REGISTRY}/react_with_node"
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
          
     }
