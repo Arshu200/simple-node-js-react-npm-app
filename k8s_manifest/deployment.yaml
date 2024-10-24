@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: react_node
+  name: react
   namespace: dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: react_node
+      app: react
   template:
     metadata:
       labels:
-        app: react_node
+        app: react
     spec:
       containers:
       - name: react_node_container
